@@ -1,0 +1,6 @@
+__pycache__/
+.env
+.streamlit/
+venv/
+.DS_Store
+.secrets.toml.swap
