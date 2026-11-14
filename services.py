@@ -3,12 +3,15 @@ from google.genai import types
 from schemas import ProductRequirementsDocument
 
 def generate_prd(api_key: str, raw_input_text: str) -> ProductRequirementsDocument:
-    """Initializes the GenAI client with a safety timeout and returns a parsed PRD."""
+    """Initializes the GenAI client with a valid key and safety timeout."""
+    if not api_key or not api_key.strip():
+        raise ValueError("A valid API key is required to initialize the GenAI client.")
+
     try:
-        # Pass http_options with a timeout (e.g., 30 seconds) to prevent infinite hanging
+        # Initialize client explicitly with the provided key
         client = genai.Client(
-            api_key=api_key,
-            http_options=types.HttpOptions(timeout=60000) # timeout in milliseconds (30 seconds)
+            api_key=api_key.strip(),
+            http_options=types.HttpOptions(timeout=60000) # 60 second timeout
         )
 
         system_instruction = (
@@ -31,5 +34,4 @@ def generate_prd(api_key: str, raw_input_text: str) -> ProductRequirementsDocume
         return response.parsed
         
     except Exception as e:
-        # Raise a clean exception that main.py can catch immediately
         raise RuntimeError(f"Gemini API generation failed: {str(e)}")

@@ -9,6 +9,7 @@ st.set_page_config(page_title="Automated PRD Generator", layout="wide")
 st.title("Automated Scoping and Product Requirements Generator")
 st.markdown('Transform messy feature ideas into a structured Product Requirements Document instantly.')
 
+# API key input
 api_key_input = st.sidebar.text_input("Google AI Studio key", type="password")
 api_key = api_key_input or st.secrets.get("GEMINI_API_KEY") or os.getenv("GOOGLE_GENAI_API_KEY")
 
@@ -21,17 +22,16 @@ raw_input_text = st.text_area(
 generate_button = st.button("Generate PRD", type="primary")
 
 if generate_button:
-    if not api_key:
-        st.error("Please provide a valid API key in the sidebar.")
+    # Strict validation check to prevent hanging credential lookups
+    if not api_key or not api_key.strip():
+        st.error("Please provide a valid Google AI Studio API key in the sidebar.")
     elif not raw_input_text.strip():
-        st.error("Please enter input text.")
+        st.error("Please enter some raw input text.")
     else:
-        # Use st.status to provide clear, step-by-step visibility
         with st.status("Running generation pipeline...", expanded=True) as status:
             try:
-                status.update(label="Sending payload to Gemini 3.8 Flash...", state="running")
+                status.update(label="Connecting to Gemini 3.8 Flash...", state="running")
                 
-                # Call modular service function
                 prd = generate_prd(api_key, raw_input_text)
                 
                 status.update(label="PRD generated successfully!", state="complete", expanded=False)
